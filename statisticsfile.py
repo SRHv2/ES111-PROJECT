@@ -28,33 +28,26 @@ print(f"Variance: {variance:.3f}")
 
 
 #--------------CATEGORIZE DATA----------------------
-under4=[]
-above4under8= []
-above8under12 = []
-above12= []
-for i in word_lengths:
-    if i>=0 and i<4:
-        under4.append(i)
-    if i>=4 and i<8:
-        above4under8.append(i)
-    if i>=8 and i<12:
-        above8under12.append(i)
-    else:
-        above12.append(i)
+w2, w3, w4, w5, w6, w7, w8, w9, w10 = [], [], [], [], [], [], [], [], []
+w11, w12, w13, w14, w15, w16, w17, w18, w19, w20 = [], [], [], [], [], [], [], [], [], []
 
+for value in word_lengths:
+    if 2 <= value <= 20:  
+        target_array = globals()[f'w{value}']
+        target_array.append(value)
+for i in range(2, 21):
+    globals()[f'w{i}len'] = len(globals()[f'w{i}'])
 
-under4_len=len(under4)
-above4under8_len=len(above4under8)
-above8under12_len=len(above8under12)
-above12_len=len(above12)
 
 #-------------------MAKE GRAPHS-----------------------------------------------
-categories = ['Under 4', 'Under 8 Over 4', 'Under 12 Over 8', 'Over 12']
-values=[under4_len, above4under8_len, above8under12_len,above12_len]
-colors = ['red', 'orange', 'yellow', 'green']
-plt.figure(figsize=(14, 6))
+categories = [str(i) for i in range(2, 21)]  
+values = [globals()[f'w{i}len'] for i in range(2, 21)]
+group_ranges = [(2,5), (6,9), (10,13), (14,17), (18,20)]
+group_labels = ["2-5", "6-9", "10-13", "14-17", "18-20"]
+grouped_values = [sum(values[start-2:end-1]) for start,end in group_ranges]
+plt.figure(figsize=(18, 6))
 plt.subplot(1, 2, 1)
-bars = plt.bar(categories, values, color=colors)
+bars = plt.bar(categories, values)
 for bar in bars:
     height = bar.get_height()
     plt.text(bar.get_x() + bar.get_width()/2., height,
@@ -63,13 +56,22 @@ plt.title('Word Length Distribution Histogram')
 plt.xlabel('Word Lengths')
 plt.ylabel('Frequency')
 plt.subplot(1, 2, 2)
-plt.pie(values, labels=categories, colors=colors, 
-        autopct='%1.1f%%', startangle=90, shadow=False,
-        explode=(0.1, 0, 0, 0))
-plt.title('Word Length Pie Chart')
-plt.tight_layout()  # Adjust spacing between subplots
+colors = ['#ff9999','#66b3ff','#99ff99','#ffcc99','#c2c2f0']
+explode = (0.05, 0.05, 0.05, 0.05, 0.1) 
+wedges, texts, autotexts = plt.pie(
+    grouped_values,
+    explode=explode,
+    labels=group_labels,
+    colors=colors,
+    autopct='%1.1f%%',
+    startangle=90,
+    shadow=True,
+    textprops={'fontsize': 12}
+)
+plt.setp(autotexts, size=12, weight="bold")  
+plt.title('Word Length Distribution (Grouped)', fontsize=14)
+plt.tight_layout(pad=3.0)
 plt.show()
-
 
 #-----------------------GENERATE FREQUENCY TABLE, FIND ITS MEAN AND VARIANCE------------
 
